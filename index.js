@@ -6,7 +6,6 @@ import cookieParser from 'cookie-parser';
 import userRoute from "./routes/userRoutes.js"
 dotenv.config();
 const app = express();
-console.log(process.env.EMAIL_USER, process.env.EMAIL_PASS); // should not be undefined
 app.use(cors());
 
 // Database connection

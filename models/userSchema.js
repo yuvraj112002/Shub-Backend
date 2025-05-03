@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema(
     isVerified: { type: Boolean, default: false },
     otp: {type:String},
     otpExpires: Date,
+    lastOtpSent: Date, 
     deleteAt: { type: Date, expires: 600 } // document will auto-delete after 10 min
   },
   { timestamps: true }
@@ -33,12 +34,16 @@ const userSchema = new mongoose.Schema(
 
 // Encrypt password before saving
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
+  // 🔐 Hash password if modified
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 
   // 🔐 Hash OTP if modified
   if (this.isModified("otp") && this.otp) {
+    console.log("My otp pre hook")
     this.otp = await bcrypt.hash(this.otp, 10);
+    console.log(this.otp);
   }
   next();
 });
